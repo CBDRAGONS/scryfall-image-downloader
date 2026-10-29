@@ -2145,6 +2145,36 @@ function errText(data, res, fallback) {
   return data?.details || fallback || `HTTP ${res.status} ${res.statusText || 'Error'}`;
 }
 
+
+let oracleRescuePromise = null;
+async function recoverCardFromLocalIndexes(entry) {
+  // The local source must contain an exact Scryfall Oracle name, not a guess.
+  if (!entry.name || currentAbortController?.signal.aborted) return null;
+  if (!oracleRescuePromise) oracleRescuePromise =
+    fetch('./data/oracle_index.json', { signal: currentAbortController?.signal })
+      .then(r => r.ok ? r.json() : null).catch(() => null);
+  const catalog = await oracleRescuePromise;
+  const oracleId = catalog?.by_name?.[entry.name.toLowerCase()];
+  if (!oracleId || !catalog.cards?.[oracleId]) return null;
+  try { await ensureBulkData(); } catch { return null; }
+  let choices = getPrintsFromBulk({ oracle_id: oracleId }) || [];
+  if (paperOnly) choices = choices.filter(p => p.games?.includes('paper') && !p.digital);
+  if (!choices.length) return null;
+  const exact = choices.filter(p =>
+    (!entry.set || p.set.toLowerCase() === entry.set.toLowerCase()) &&
+    (!entry.number || String(p.collector_number).toLowerCase() === String(entry.number).toLowerCase()));
+  const print = (exact.length ? exact : choices).slice(-1)[0];
+  const changed = !!((entry.set && entry.set.toLowerCase() !== print.set.toLowerCase()) ||
+    (entry.number && String(entry.number).toLowerCase() !== String(print.collector_number).toLowerCase()));
+  return {
+    ...catalog.cards[oracleId], ...print,
+    oracle_id: oracleId, name: catalog.cards[oracleId].name || entry.name,
+    _originalEntry: entry, _usedLocalFallback: true, _usedFallback: changed,
+    scryfall_uri: 'https://scryfall.com/card/' + encodeURIComponent(print.set) +
+      '/' + encodeURIComponent(print.collector_number)
+  };
+}
+
 async function fetchCardMetadata(entry) {
   const variant = usePremium ? 'premium' : 'default';
   const cachedCard = getCachedCard(entry.name, entry.set, entry.number, variant);
@@ -2328,24 +2358,59 @@ async function applyCardOptions(card, options) {
   return modifiedCard;
 }
 
+
 async function fetchCardImage(card, size) {
-  const imgUrl = getImg(card, size);
-  if (!imgUrl) throw new Error('No image for this size');
-  const ir = await cdnFetch(imgUrl);
-  if (!ir.ok) throw new Error(`Image fetch failed: ${ir.status} ${ir.statusText}`);
-  const blob = await ir.blob();
-  const ext = size === 'png' ? 'png' : 'jpg';
-  return {
-    name: card.name,
-    blob: blob,
-    filename: `${sanitize(card.name)}_${card.set}.${ext}`,
-    set: card.set,
-    quantity: card._originalEntry?.quantity || 1,
-    type_line: card.type_line || '',
-    cmc: card.cmc || 0,
-    scryfall_uri: card.scryfall_uri,
-    imgUrl: imgUrl
-  };
+  const tried = new Set();
+  let lastError;
+  async function attempt(print, resolution, alternate) {
+    const url = getImg(print, resolution);
+    if (!url || tried.has(url)) return null;
+    tried.add(url);
+    try {
+      const response = await cdnFetch(url);
+      if (!response.ok) {
+        lastError = new Error('HTTP ' + response.status);
+        return null;
+      }
+      const blob = await response.blob();
+      return {
+        name: card.name, blob: blob,
+        filename: sanitize(card.name) + '_' + print.set + '.' + (resolution === 'png' ? 'png' : 'jpg'),
+        set: print.set, quantity: card._originalEntry?.quantity || 1,
+        type_line: card.type_line || '', cmc: card.cmc || 0,
+        scryfall_uri: alternate
+          ? 'https://scryfall.com/card/' + encodeURIComponent(print.set) + '/' + encodeURIComponent(print.collector_number)
+          : card.scryfall_uri,
+        imgUrl: url,
+        _usedResolutionFallback: resolution !== size,
+        _usedAlternatePrinting: alternate,
+        _resolutionUsed: resolution
+      };
+    } catch (e) {
+      if (e.name === 'AbortError') throw e;
+      lastError = e;
+      return null;
+    }
+  }
+  // First save the original printing by trying a smaller, less expensive image.
+  for (const resolution of [...new Set([size, 'normal', 'small'])]) {
+    const image = await attempt(card, resolution, false);
+    if (image) return image;
+  }
+  // As a last resort, fetch another verified printing of the SAME Oracle card.
+  if (card.oracle_id && !currentAbortController?.signal.aborted) {
+    if (!bulkDataIndex) {
+      try { await ensureBulkData(); } catch { /* no published index */ }
+    }
+    let prints = (getPrintsFromBulk(card) || []).filter(p => p.id !== card.id &&
+      (!paperOnly || (p.games?.includes('paper') && !p.digital)));
+    if (!firstPrint) prints.reverse();
+    for (const p of prints.slice(0, 2)) {
+      const image = await attempt({ ...card, ...p, image_uris: undefined, card_faces: undefined }, 'normal', true);
+      if (image) return image;
+    }
+  }
+  throw new Error('all versions unavailable: ' + (lastError?.message || 'no available image'));
 }
 
 document.getElementById('fetch-btn').addEventListener('click',async()=>{
@@ -2420,7 +2485,12 @@ document.getElementById('fetch-btn').addEventListener('click',async()=>{
           if (signal.aborted) throw new DOMException('Aborted', 'AbortError');
           const card = await fetchCardMetadata(entry);
           return { index: i, card, error: null };
-        } catch (e) { return { index: i, card: null, error: e.message || e.name }; }
+        } catch (e) {
+          if (signal.aborted || e.name === 'AbortError') return { index: i, card: null, error: 'Aborted' };
+          const offline = await recoverCardFromLocalIndexes(entry).catch(() => null);
+          if (offline) return { index: i, card: offline, error: null };
+          return { index: i, card: null, error: e.message || e.name };
+        }
       });
     });
     
@@ -2432,7 +2502,7 @@ document.getElementById('fetch-btn').addEventListener('click',async()=>{
       if (result.error) {
         const entry = allEntries[result.index];
         const displayName = entry.name || (entry.set && entry.number ? `${entry.set.toUpperCase()} #${entry.number}` : 'Unknown');
-        log(`✕  ${displayName}: ${result.error}`, 'e');
+        log(`✕  ${displayName}: metadata lookup failed (${result.error}); no verified offline match`, 'e');
         err++;
       } else { cardMetadataMap.set(result.index, result.card); }
       
@@ -2531,7 +2601,7 @@ document.getElementById('fetch-btn').addEventListener('click',async()=>{
       if (result.error && (result.error === 'Aborted' || result.error.includes('abort') || signal.aborted)) throw new DOMException('Aborted', 'AbortError');
       
       if (result.error) {
-        log(`✕  ${result.card.name}: ${result.error}`, 'e');
+        log(`✕  ${result.card.name}: image failed (${result.error}); card identity was found`, 'e');
         err++;
       } else {
         const { imageData, section, card } = result;
@@ -2546,7 +2616,12 @@ document.getElementById('fetch-btn').addEventListener('click',async()=>{
         const fallbackNote = card._usedFallback ? ` ⚠︎ alt print used` : notes.join('');
         const cacheNote = card._fromCache ? ' \u2726 cached' : '';
         const premiumNote = card._usedPremium ? ' ✦ premium' : '';
-        log(`✓  ${card.name} (${card.set.toUpperCase()})${fallbackNote}${premiumNote}${cacheNote}`, card._usedFallback ? 'warn' : 'ok');
+        const localNote = card._usedLocalFallback ? ' ✦ offline Scryfall data' : '';
+        const versionNote = imageData._usedAlternatePrinting
+          ? ' ⚠︎ Version: ' + imageData.set.toUpperCase() + ' (different printing)'
+          : imageData._usedResolutionFallback ? ' ✦ ' + imageData._resolutionUsed + ' image fallback' : '';
+        log('✓  ' + card.name + ' (' + imageData.set.toUpperCase() + ')' + fallbackNote + premiumNote + cacheNote + localNote + versionNote,
+          card._usedFallback || imageData._usedAlternatePrinting ? 'warn' : 'ok');
         ok++;
       }
       
