@@ -12,11 +12,13 @@ This project **started as a fork of [Luminary by ianos](https://github.com/ianos
 - **Clear feature labels:** separate working tools, generated backend data, and future capabilities.
 - **No hidden backend assumptions:** state when Scryfall data was last refreshed; show errors rather than claiming an index is current.
 
-## 15-card top-down scanner (research and plan)
+## 15-card top-down scanner (working prototype; field testing pending)
 
-A **five-column × three-row, 15-card-per-photo** collection-capture workflow is under research. **It is not implemented or accuracy-tested yet.** The recommended first implementation uses fixed-mat cropping, title-band OCR, a local Scryfall name index, a conservative 15-slot review, and collection CSV export. Artwork image retrieval and pretrained visual embeddings are optional improvements to benchmark later.
+**[Open the phone photo scanner](https://cbdragons.github.io/scryfall-image-downloader/scanner/)** · [Phone user guide](docs/SCANNER_PHONE_GUIDE.md) · [Research & engineering plan](docs/15_CARD_SCANNER_RESEARCH.md)
 
-**Start with [15-Card Scanner Research and Engineering Decision](docs/15_CARD_SCANNER_RESEARCH.md)** — includes verified repository status, Karpathy-related vision and AutoResearch ideas, evaluated alternatives, technical pipeline, reliability safeguards, sample data contract, and a real-photo acceptance-test plan.
+The `scanner/` directory contains an initial **five-column × three-row, 15-card-per-photo browser implementation**: photograph upload, adjustable corner perspective correction, 15 crops, reused-worker English OCR, verified Scryfall-name catalog candidates, 15-slot manual review, a Vincent Valentine Commander workspace, duplicate-photo checks, and local-browser collection/deck records with CSV/text/JSON export.
+
+**Status, truthfully:** scanner code and automated core tests exist; **real-phone accuracy and speed are not measured**, printings/foils are not identified automatically, and data is **not automatically synced** to ChatGPT/Google Drive. Export or import backups explicitly. The original Scryfall explorer still works independently. See the user guide for limitations, baseline tests and safe data handling.
 
 ## Current capabilities and roadmap
 
@@ -29,7 +31,7 @@ A **five-column × three-row, 15-card-per-photo** collection-capture workflow is
 | Oracle text and rulings bulk-data index generators | **Implemented code** | `update_bulk_data.py` builds indexes after a successful Scryfall download. |
 | Weekly/manual GitHub Actions refresh | **Configured** | Verify actual run and generated files before claiming data is populated. |
 | Search Oracle text/rulings directly on the site | **Planned** | The page **does not yet** display the new indexes; open card links on Scryfall. |
-| Personal collection tracking and Commander deck editing | **Planned** | No synced inventory, ownership database or full deck editor yet. |
+| Local photographed-card inventory and Vincent deck assignment | **Prototype** | Scanner persists confirmed names in this browser and exports files; no remote sync or full deck legality audit. |
 | Synergy, curve, combo and legality checks | **Planned** | These need verified rules and a validated owned/decklist data source. |
 
 ## Test the current explorer with David
