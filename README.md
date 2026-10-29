@@ -12,6 +12,12 @@ This project **started as a fork of [Luminary by ianos](https://github.com/ianos
 - **Clear feature labels:** separate working tools, generated backend data, and future capabilities.
 - **No hidden backend assumptions:** state when Scryfall data was last refreshed; show errors rather than claiming an index is current.
 
+## 15-card top-down scanner (research and plan)
+
+A **five-column × three-row, 15-card-per-photo** collection-capture workflow is under research. **It is not implemented or accuracy-tested yet.** The recommended first implementation uses fixed-mat cropping, title-band OCR, a local Scryfall name index, a conservative 15-slot review, and collection CSV export. Artwork image retrieval and pretrained visual embeddings are optional improvements to benchmark later.
+
+**Start with [15-Card Scanner Research and Engineering Decision](docs/15_CARD_SCANNER_RESEARCH.md)** — includes verified repository status, Karpathy-related vision and AutoResearch ideas, evaluated alternatives, technical pipeline, reliability safeguards, sample data contract, and a real-photo acceptance-test plan.
+
 ## Current capabilities and roadmap
 
 | Capability | Status | Explanation |
