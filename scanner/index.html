@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>CBDRAGONS | 15-Card Photo Capture</title>
+<meta name="description" content="Photograph and review fifteen Magic cards at a time; export your Vincent Valentine inventory.">
+<link rel="stylesheet" href="./scanner.css">
+<script defer src="https://cdn.jsdelivr.net/npm/tesseract.js@5.1.1/dist/tesseract.min.js"></script>
+<script type="module" src="./scanner.js"></script>
+</head>
+<body>
+<header class="page-header">
+  <div class="branding"><span class="mark">◆</span><div><strong>CBDRAGONS</strong><small>15-CARD PHOTO CAPTURE · BETA</small></div></div>
+  <a href="../index.html">Card Explorer ↗</a>
+</header>
+<main>
+  <section class="hero">
+    <span class="eyebrow">VINCENT VALENTINE · COMMANDER WORKSPACE</span>
+    <h1>Your cards, from one photograph.</h1>
+    <p>Lay out <b>five across and three down</b>. Photograph all 15 cards from directly above, align the four corners, scan names, confirm anything uncertain, then save and export.</p>
+    <p class="caution"><b>Important:</b> This is an initial OCR-first scanner, not a verified automatic printing detector. Saved data lives in this browser until you export a backup or collection CSV. Photos are processed in the browser; the name catalog and OCR model download from external services.</p>
+  </section>
+  <section class="panel" aria-labelledby="photo-heading">
+    <div class="heading"><h2 id="photo-heading">1 · Upload & align</h2><span id="photoStatus" class="muted" role="status">No photograph selected</span></div>
+    <div class="controls">
+      <label class="file-button" for="photoInput">📷 Choose / take photo</label>
+      <input id="photoInput" type="file" accept="image/*" capture="environment">
+      <label class="inline">Card spacing <input id="gap" type="range" min="0" max="12" value="2" step="1"><output id="gapValue">2%</output></label>
+      <button id="resetCorners" type="button" class="secondary" disabled>Reset corners</button>
+    </div>
+    <p class="hint">Drag the <b>four gold handles</b> to the outside corners of the full 5×3 card rectangle. The overlay shows each card's intended crop. Include the whole card array, not the outside edges of a larger table or mat.</p>
+    <div class="photo-wrap"><canvas id="preview" aria-label="Photo with adjustable four-corner grid overlay"></canvas></div>
+    <div class="controls">
+      <button id="cropButton" type="button" disabled>Crop 15 cards</button>
+      <button id="scanButton" type="button" disabled>Read 15 titles with OCR</button>
+      <span id="workStatus" class="muted" role="status" aria-live="polite"></span>
+    </div>
+  </section>
+  <section class="panel" aria-labelledby="review-heading">
+    <div class="heading"><h2 id="review-heading">2 · Inspect & confirm</h2><span id="reviewCount" class="muted">0 / 15 reviewed</span></div>
+    <p class="hint">Green = exact high-confidence OCR match; yellow = manual review. All 15 positions stay visible. Confirm an uncertain name from suggestions or type an exact Scryfall card name. Mark genuinely blank slots as empty.</p>
+    <div id="cardGrid" class="card-grid"><p class="muted">Upload and crop a photograph to show the 15 slots.</p></div>
+    <div class="controls review-actions">
+      <label class="check"><input id="alsoDeck" type="checkbox"> Also add these cards to my Vincent Valentine deck</label>
+      <button id="saveBatch" type="button" disabled>Save confirmed batch</button>
+      <span id="saveStatus" class="muted" role="status" aria-live="polite"></span>
+    </div>
+  </section>
+  <section class="panel" aria-labelledby="collection-heading">
+    <div class="heading"><h2 id="collection-heading">3 · Collection & exports</h2><span id="inventoryStats" class="muted"></span></div>
+    <p class="hint">New scans add physical copies to this browser's collection only after you confirm all 15 positions. The Vincent deck is separate and opt-in. Export and import JSON backups to move between devices or retain history. CSV can be imported into your master collection spreadsheet.</p>
+    <div class="controls">
+      <button id="exportCollection" type="button" class="secondary">Download collection CSV</button>
+      <button id="exportDeck" type="button" class="secondary">Download Vincent decklist</button>
+      <button id="exportBackup" type="button" class="secondary">Download JSON backup</button>
+      <label class="file-button secondary" for="importBackup">Import JSON backup</label><input id="importBackup" type="file" accept=".json,application/json">
+    </div>
+    <div class="columns">
+      <div><h3>Saved collection <small>(card names)</small></h3><div id="inventoryList" class="inventory-list"></div></div>
+      <div><h3>Recent batches</h3><div id="batchHistory" class="inventory-list"></div></div>
+    </div>
+  </section>
+  <footer>CBDRAGONS scanner proof-of-concept. Uses <a href="https://scryfall.com/">Scryfall</a> card-name data. No paid API keys. Image recognition is not guaranteed; verify critical card identities and printings before using your master inventory.</footer>
+</main>
+</body>
+</html>
