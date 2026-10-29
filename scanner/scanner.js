@@ -258,7 +258,7 @@ el("exportCollection").addEventListener("click",()=>{
 });
 el("exportDeck").addEventListener("click",()=>{
   const rows=aggregateEntries(state.batches,"deck");
-  const others=rows.filter(r=>normalizeName(r.name)!==normalizeName("Vincent Valentine"));
+  const others=rows.filter(r=>!(r.name==="Vincent Valentine"||r.name.startsWith("Vincent Valentine //")));
   download("vincent-valentine-scanned-deck.txt","# Planned commander (physical ownership not verified)\n1 Vincent Valentine\n\n# Scanned deck entries\n"+others.map(r=>r.quantity+" "+r.name).join("\n")+"\n","text/plain;charset=utf-8");
 });
 el("exportBackup").addEventListener("click",()=>download("cbdragons-scanner-backup-"+new Date().toISOString().slice(0,10)+".json",JSON.stringify({format:"cbdragons-scanner-backup",version:1,commander:"Vincent Valentine",batches:state.batches},null,2),"application/json"));
