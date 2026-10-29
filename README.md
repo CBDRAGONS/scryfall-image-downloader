@@ -18,7 +18,7 @@ This project **started as a fork of [Luminary by ianos](https://github.com/ianos
 
 The `scanner/` directory contains an initial **five-column × three-row, 15-card-per-photo browser implementation**: photograph upload, adjustable corner perspective correction, 15 crops, reused-worker English OCR, verified Scryfall-name catalog candidates, 15-slot manual review, a Vincent Valentine Commander workspace, duplicate-photo checks, and local-browser collection/deck records with CSV/text/JSON export.
 
-**Status, truthfully:** scanner code and automated core tests exist; **real-phone accuracy and speed are not measured**, printings/foils are not identified automatically, and data is **not automatically synced** to ChatGPT/Google Drive. Export or import backups explicitly. The original Scryfall explorer still works independently. See the user guide for limitations, baseline tests and safe data handling.
+**Vincent Valentine deck workspace:** [source-verified commander and operating rules](decks/vincent-valentine/README.md) · [current checkpoint](decks/vincent-valentine/CHECKPOINT.md) · [new-chat starter prompt](decks/vincent-valentine/CHATGPT_PROMPT.md). The verified 99 has not been photographed or populated yet.\n\n**Status, truthfully:** scanner code and automated core tests exist; **real-phone accuracy and speed are not measured**, printings/foils are not identified automatically, and data is **not automatically synced** to ChatGPT/Google Drive. Export or import backups explicitly. The original Scryfall explorer still works independently. See the user guide for limitations, baseline tests and safe data handling.
 
 ## Current capabilities and roadmap
 
