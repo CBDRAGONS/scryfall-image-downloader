@@ -47,6 +47,12 @@ function resizeImage(img){
   return canvas;
 }
 function defaultCorners(){return [{x:.055,y:.075},{x:.945,y:.075},{x:.945,y:.925},{x:.055,y:.925}]}
+function invalidateCrops(){
+  if(state.slots.length){
+    state.slots=[];renderCards();
+    notice("workStatus","Alignment changed. Crop again before scanning or saving.");
+  }
+}
 function drawPreview(){
   const p=el("preview"),c=state.source;
   if(!c)return;
@@ -73,14 +79,15 @@ el("preview").addEventListener("pointermove",e=>{
   if(state.dragging<0)return;
   const p=pointerPos(e);
   state.corners[state.dragging]={x:Math.max(.001,Math.min(.999,p.x)),y:Math.max(.001,Math.min(.999,p.y))};
+  invalidateCrops();
   try{drawPreview()}catch{}
   e.preventDefault();
 });
 function finishDrag(){state.dragging=-1}
 el("preview").addEventListener("pointerup",finishDrag);
 el("preview").addEventListener("pointercancel",finishDrag);
-el("resetCorners").addEventListener("click",()=>{state.corners=defaultCorners();drawPreview()});
-el("gap").addEventListener("input",()=>{el("gapValue").textContent=el("gap").value+"%";if(state.slots.length)notice("workStatus","Spacing changed. Crop again before scanning or saving.")});
+el("resetCorners").addEventListener("click",()=>{state.corners=defaultCorners();invalidateCrops();drawPreview()});
+el("gap").addEventListener("input",()=>{el("gapValue").textContent=el("gap").value+"%";invalidateCrops()});
 
 el("photoInput").addEventListener("change",async e=>{
   const file=e.target.files?.[0];if(!file)return;
@@ -172,7 +179,7 @@ el("scanButton").addEventListener("click",async ()=>{
         slot.options=candidates(state.nameIndex,slot.raw,3);
         const first=slot.options[0];
         slot.name=first?.name||"";
-        slot.status=first?.exact && slot.options.length===1 && slot.confidence>=90 ? "ACCEPT" : "REVIEW";
+        slot.status=first?.exact && slot.options.length===1 && normalizeName(first.name)===normalizeName(slot.raw) && slot.confidence>=90 ? "ACCEPT" : "REVIEW";
       }catch(err){slot.raw="OCR error: "+err.message;slot.status="REVIEW";}
       renderCards();await new Promise(r=>setTimeout(r,0));
     }
