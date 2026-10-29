@@ -1,53 +1,78 @@
-# ✦ Luminary — Scryfall Image Downloader
+# CBDRAGONS · MTG Card Repository
 
-A single-file, browser-based tool for fetching Magic: The Gathering card images from the [Scryfall API](https://scryfall.com/docs/api) and turning them into downloadable assets: individual images, a visual decklist, or a print-ready proxy PDF.
+**The goal is a trustworthy, updatable MTG card reference and Commander deckbuilding workspace.** We want to verify what cards actually say, check their rulings and color identities, track the cards and decks David owns, record confirmed swaps, and make better deckbuilding decisions from accurate data.
 
-No installation, no build step, no API key. Open `index.html` and go.
+This project **started as a fork of [Luminary by ianos](https://github.com/ianos93/scryfall-image-downloader/)**. Luminary's excellent browser-based image and printing explorer remains functional, but **CBDRAGONS is not primarily a proxy-making application**. The older print/visual tools are retained as optional utilities.
 
-**Version 4.0**
+## Project principles
 
----
+- **Correct before clever:** use current Scryfall Oracle text and verified rulings, not guessed abilities or unverified combos.
+- **One source of truth:** Scryfall describes all printed cards; the user's collection data (when provided) determines which printings and quantities they own.
+- **Explicit Commander history:** keep a complete decklist, commander, and confirmed IN/OUT swaps; never silently change a deck.
+- **Clear feature labels:** separate working tools, generated backend data, and future capabilities.
+- **No hidden backend assumptions:** state when Scryfall data was last refreshed; show errors rather than claiming an index is current.
 
-## Features at a Glance
+## Current capabilities and roadmap
 
-- Paste card names or upload a `.txt` deck list
-- Parses virtually every common deck export format, including main/sideboard sections and quantities
-- Six image resolution options (Small through PNG)
-- **Paper Only** — exclude digital-only prints (MTGO, Arena)
-- **First Print** — fetch the oldest printing of each card
-- **Three output modes:**
-  - **Individual Cards** — preview grid + ZIP download
-  - **Visual Decklist** — a single stacked-layout PNG, with optional transparent background
-  - **Print for Proxy** — paginated A4/A3 PDF at true card dimensions
-- **Recent Lists** — your last 20 fetched lists, saved in the browser and reloadable in one click
-- Local card database for instant printing lookups (no per-card API calls)
-- 7-day browser cache of card metadata, with a per-variant breakdown and clear button
-- Cancel a fetch mid-flight without reloading the page
-- Rate-limit-aware fetching with automatic backoff and retry
+| Capability | Status | Explanation |
+|---|---|---|
+| Card name/printing lookup and card images | **Working** | Inherited Luminary explorer; click any card to open it on Scryfall. |
+| Decklist text import, recent lists and image/visual export | **Working** | Browser-local lists and optional visual exports. |
+| Legacy proxy PDF layout | **Working, secondary** | Kept for compatibility; not our main goal. |
+| Scryfall printing index | **Working when available** | The web page reads `data/prints_index.json`. |
+| Oracle text and rulings bulk-data index generators | **Implemented code** | `update_bulk_data.py` builds indexes after a successful Scryfall download. |
+| Weekly/manual GitHub Actions refresh | **Configured** | Verify actual run and generated files before claiming data is populated. |
+| Search Oracle text/rulings directly on the site | **Planned** | The page **does not yet** display the new indexes; open card links on Scryfall. |
+| Personal collection tracking and Commander deck editing | **Planned** | No synced inventory, ownership database or full deck editor yet. |
+| Synergy, curve, combo and legality checks | **Planned** | These need verified rules and a validated owned/decklist data source. |
 
----
+## Test the current explorer with David
 
-## Getting Started
+1. Open the web page if hosted with GitHub Pages. Otherwise, use a local web server to serve `index.html` and `data/`.
+2. Paste `Sol Ring`, `Arcane Signet`, `Lightning Bolt`, one per line, and click **Summon Cards**.
+3. Confirm all three resolve. **Click a card image** to open Scryfall and check the exact Oracle rules text.
+4. Repeat with **Paper Only** and **First Print** to compare printings.
+5. Paste/import a Commander decklist and note missing cards, confusing results, or incorrect printings.
+6. For backend validation, a repository maintainer opens **GitHub → Actions → Refresh Scryfall bulk indexes → Run workflow** and verifies the run completes. Generated files should appear in `data/` only after a successful refresh.
 
-Open `index.html` in any modern browser.
+**Scope of this evening's test:** name resolution, printings, links to official card text, and general usability. It is **not** yet a test of in-page Oracle search or collection management.
 
-For GitHub Pages, push `index.html` (and optionally `favicon.png` and the `data/` folder) to the root of your repository, then enable Pages under **Settings → Pages → Branch: main**.
+## Getting started / refreshing data
 
-### Project Structure
+The inherited web explorer has no build step or API key. Open `index.html` from an HTTP-hosted site (GitHub Pages or local server).
 
+Refresh and validate Scryfall data with **Python 3.9+**:
+
+```sh
+python update_bulk_data.py
+python verify_indexes.py
+python -m unittest discover -s tests -v
 ```
-index.html                  The entire application
-favicon.png                 Site icon
-data/
-  prints_index.json         Local card database (generated)
-  bulk_manifest.json        Database age/size metadata (generated)
-update_bulk_data.py         Builds the two files above from Scryfall bulk data
-update_bulk_data.bat        Windows launcher - double-click to run the script
+
+The GitHub Actions workflow `.github/workflows/refresh-scryfall.yml` is configured for Mondays at **09:23 UTC** plus manual dispatch. The workflow has to run successfully before `oracle_index.json` and `rulings_index.json` can be relied upon.
+
+See **[SCRYFALL_INTEGRATION.md](SCRYFALL_INTEGRATION.md)** for file schemas, Scryfall export format, testing and deployment details.
+
+### Repository layout
+
+```text
+index.html                        Luminary-derived web explorer and project overview
+data/prints_index.json            Compact printing lookup used by the current page
+data/bulk_manifest.json           Timestamps and counts of published indexes
+data/oracle_index.json            Generated Oracle rules data (after refresh)
+data/rulings_index.json           Generated rulings data (after refresh)
+update_bulk_data.py               Streams official gzipped Scryfall JSONL exports
+verify_indexes.py                 Validates generated indexes
+tests/test_scryfall_indexes.py    Offline fixture-based regression tests
+.github/workflows/refresh-scryfall.yml
+SCRYFALL_INTEGRATION.md           Detailed setup and schema notes
 ```
 
-The `data/` folder is optional. Without it the app still works, but **Paper Only** and **First Print** fall back to live API calls (see [Card Database](#card-database)).
-
 ---
+
+## Existing Luminary explorer reference
+
+The remaining sections document the **inherited** image, printing and visual decklist features, preserved to keep the explorer usable while the repository evolves.
 
 ## Entering Card Names
 
@@ -263,7 +288,7 @@ Renders the whole deck as a single image using the classic stacked/fanned layout
 
 ---
 
-## Output Mode 3 — Print for Proxy
+## Legacy Output Mode — Print for Proxy
 
 Builds a print-ready PDF with cards at true physical size (63 × 88 mm).
 
@@ -293,44 +318,22 @@ through untouched rather than re-encoded.
 
 ---
 
-## Card Database
+## Card Database and Bulk Data
 
-**Paper Only** and **First Print** need to know every printing of a card. Doing that per-card through the API means one paginated search per card, which triggers rate limiting fast — and Scryfall's `/cards/search` endpoint blocks cross-origin requests from some hosting origins, GitHub Pages included.
+The page currently uses **`data/prints_index.json`** for fast First Print and Paper Only lookups. Each Oracle card ID maps to compatible compact printing rows: `[id, set, YYYYMMDD, gamesBits, flagsBits, collectorNumber]`. Image URLs are derived from Scryfall printing IDs.
 
-Luminary solves this with a local index.
+The new updater, `update_bulk_data.py`, fetches the official Scryfall bulk-data manifest and streams **gzipped JSONL** sources for `default_cards`, `oracle_cards`, and `rulings`. It generates:
 
-### Generating It
+- **`prints_index.json`** — the legacy compatible printing reference.
+- **`oracle_index.json`** — card names, Oracle text, card faces, color identity, and format legality.
+- **`rulings_index.json`** — published rulings grouped by Oracle ID.
+- **`bulk_manifest.json`** — counts, source timestamps and output sizes.
 
-Run `update_bulk_data.py` once. It downloads Scryfall's `default_cards` bulk file and writes two files into `data/`:
+The GitHub Actions refresh workflow checks the generated output before committing it. **The new indexes are not automatically available simply because the workflow code was merged.** Inspect the most recent successful run and the `data/` folder.
 
-- **`prints_index.json`** — a compact map of `oracle_id` → printings, pre-sorted oldest-first. Each printing is stored as `[id, set, YYYYMMDD, gamesBits, flagsBits, collectorNumber]`, keeping the file small enough to load in the browser.
-- **`bulk_manifest.json`** — timestamps and record counts, used to display database age.
+The page's **Refresh Database** button only reloads the already-published printing index; **it does not fetch new exports**. At present, the browser does not query the new Oracle or rulings indexes. For canonical card text during this stage, click a card to go to Scryfall.
 
-Image URLs are reconstructed from card IDs rather than stored, which keeps the index roughly an order of magnitude smaller than the raw bulk data.
-
-### Status and Refresh
-
-The **Card Database** section of the info modal (**ⓘ**, top right) shows a status dot:
-
-| Dot | Meaning |
-|---|---|
-| 🟢 Green | Local database loaded, updated within the last 14 days |
-| 🟡 Amber | Loaded but stale, or the file could not be parsed |
-| 🟠 Orange | No local database found |
-
-**Refresh Database** drops the in-memory index and re-reads `data/prints_index.json`, so a database you have just regenerated is picked up without a hard reload. It does not contact Scryfall.
-
-To actually update the data, re-run `update_bulk_data.py` and then hit Refresh. Do this after each new set release, roughly every three months.
-
-On Windows, double-click **`update_bulk_data.bat`** instead of using a terminal. It finds your Python install, runs the script in its own folder, and keeps the window open at the end so you can read the result. It needs Python 3.7+ on the system and tells you where to get it if none is found.
-
-### Why there is no in-browser download
-
-Earlier versions fell back to downloading Scryfall's bulk file directly in the browser when no local index was present. That path has been removed. Scryfall completed its migration to gzipped JSONL bulk files on **2026-07-20**: the `/bulk-data` manifest no longer exposes `download_uri` (it is now `jsonl_download_uri`, with `compressed_size` replacing `size`), and the payload is gzip-compressed newline-delimited JSON rather than a single JSON array.
-
-Rebuilding the index in a tab would mean streaming roughly 460 MB of decompressed data to reproduce a file that `update_bulk_data.py` already generates offline in seconds. When the local file is missing, the app now says so plainly and falls back to per-card API lookups, where rate limits apply.
-
-> **If you are upgrading:** a copy of `update_bulk_data.py` written before July 2026 will break against the new manifest. It needs to read `jsonl_download_uri` instead of `download_uri`, and to gunzip and parse the download line by line rather than as one JSON array.
+More information: [Scryfall integration guide](SCRYFALL_INTEGRATION.md).
 
 ---
 
@@ -378,7 +381,7 @@ Images are **not** cached; only metadata is.
 
 ---
 
-## What's New in 4.0
+## Original Luminary v4 Release Notes
 
 **New**
 - Recent Lists: save, reload, rename and export your recent card lists
@@ -407,4 +410,4 @@ This tool uses the [Scryfall REST API](https://scryfall.com/docs/api). Card data
 
 Proxies generated with this tool are for personal playtesting only. Do not sell them, and do not use them in sanctioned play.
 
-Created by **ianos** · [GitHub](https://github.com/ianos93/scryfall-image-downloader/) · Powered by [Scryfall](https://scryfall.com)
+Original Luminary by **ianos** ([upstream source](https://github.com/ianos93/scryfall-image-downloader/)); CBDRAGONS maintains the repository fork. Card data powered by [Scryfall](https://scryfall.com).
