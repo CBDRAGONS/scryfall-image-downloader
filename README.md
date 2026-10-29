@@ -12,6 +12,17 @@ This project **started as a fork of [Luminary by ianos](https://github.com/ianos
 - **Clear feature labels:** separate working tools, generated backend data, and future capabilities.
 - **No hidden backend assumptions:** state when Scryfall data was last refreshed; show errors rather than claiming an index is current.
 
+## Try the Commander Deck Lab pilot
+
+Open **[This is your Deck — Commander Deck Lab](deck-lab.html)** on GitHub Pages. Load the saved 100-card **The Mimeoplasm** deck or paste a Moxfield-style text export, then click **Analyze my Commander & Deck**.
+
+- The commander is always the starting point. The page reads its verified Oracle text, detects relevant mechanics and exposes them as selectable synergy goals.
+- Selecting a goal gives a transparent card-text score: **55% commander compatibility, 35% selected focus, 10% deck need**. Deck need declines as the loaded deck already has cards supporting the goal. These are **ranking heuristics**, not a win rate or an official Commander bracket.
+- The results filter Commander-illegal/off-color cards, exclude cards already in the deck, identify names that could not be matched, and show candidate additions plus nonbinding review suggestions. Nothing is auto-cut or committed.
+- Enter a creature type such as **Merfolk** under the synergy menu; that is not an exact card-name request.
+- The **full deck scoring and candidate rankings require the generated `data/oracle_index.json`**. Before the first successful refresh, the app can still verify a commander via the live Scryfall API, suggest mechanical directions, and link to a Scryfall search, but it must not invent scores for cards it couldn't verify.
+- Run `node --check deck-lab.js` and `node --test tests/deck-lab.test.cjs` for regression checks.
+## 15-card top-down scanner (research and plan)
 ## 15-card top-down scanner (working prototype; field testing pending)
 
 **[Open the phone photo scanner](https://cbdragons.github.io/scryfall-image-downloader/scanner/)** · [Phone user guide](docs/SCANNER_PHONE_GUIDE.md) · [Research & engineering plan](docs/15_CARD_SCANNER_RESEARCH.md)
@@ -30,6 +41,9 @@ The `scanner/` directory contains an initial **five-column × three-row, 15-card
 | Scryfall printing index | **Working when available** | The web page reads `data/prints_index.json`. |
 | Oracle text and rulings bulk-data index generators | **Implemented code** | `update_bulk_data.py` builds indexes after a successful Scryfall download. |
 | Weekly/manual GitHub Actions refresh | **Configured** | Verify actual run and generated files before claiming data is populated. |
+| Commander Deck Lab synergy preview | **Pilot implemented** | Separate `deck-lab.html` page; full scores need published Oracle data. |
+| Search all Oracle text/rulings directly on the main explorer | **Planned** | The original `index.html` page does not expose a full rules search. |
+| Personal collection tracking and Commander deck editing | **Planned** | No synced inventory, ownership database or full deck editor yet. |
 | Search Oracle text/rulings directly on the site | **Planned** | The page **does not yet** display the new indexes; open card links on Scryfall. |
 | Local photographed-card inventory and Vincent deck assignment | **Prototype** | Scanner persists confirmed names in this browser and exports files; no remote sync or full deck legality audit. |
 | Synergy, curve, combo and legality checks | **Planned** | These need verified rules and a validated owned/decklist data source. |
