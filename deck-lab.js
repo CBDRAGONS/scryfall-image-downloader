@@ -14,7 +14,7 @@ const RULES=[
  ['removal','Interaction',/destroy target|exile target|counter target spell|deals? \d+ damage to any target/i],
  ['tokens','Token engines',/create (a|two|three|x|that many|one or more).{0,80}tokens?|tokens? you control/i],
  ['lifegain','Life gain',/gain \d+ life|gain that much life|whenever you gain life|\blifelink\b/i],
- ['blink','Blink / ETB',/exile.{0,80}return.{0,90}battlefield|enters the battlefield|when(ever)? .{0,45}enters/i],
+ ['blink','Blink / ETB',/exile.{0,80}return.{0,90}battlefield|when(ever)? .{0,45}enters the battlefield/i],
  ['artifacts','Artifact synergy',/artifact(s)? (you control|spell|card|creature)|equipped creature|whenever you cast an artifact/i],
  ['lands','Landfall / lands',/landfall|land enters the battlefield|play an additional land|lands? from (your|a) graveyard/i],
  ['spells','Spellslinger',/whenever you cast (an? )?(instant|sorcery|noncreature) spell|copy target (instant|sorcery) spell/i],
@@ -50,7 +50,7 @@ function parseDeck(text,commander){
   const m=line.match(/^(\d+)\s*[xX×]?\s+(.+)$/);
   if(!m){issues.push('Line '+(i+1)+' was not a quantity and card name: '+line.slice(0,55));return}
   const count=Number(m[1]);
-  const name=m[2].replace(/\s+\([A-Za-z0-9]{2,6}\)(?:\s+[0-9A-Za-z★]+)?\s*$/,'').replace(/\s+\*[^*]+\*\s*$/,'').trim();
+  const name=m[2].replace(/\s+\*[^*]+\*\s*$/,'').replace(/\s+\([A-Za-z0-9]{2,6}\)(?:\s+[0-9A-Za-z★]+)?\s*$/,'').trim();
   if(!name||count<1||count>500){issues.push('Line '+(i+1)+' invalid name or quantity');return}
   cards.push({name,quantity:count,section:section==='commander'||normalize(name)===normalize(commander)?'commander':'main'});
  });
@@ -146,7 +146,7 @@ function render(){
  el('lab-focus-label').textContent=focus==='tribal'?(tribe||'Creature type')+' typal':title(focus);
  if(!db){
   el('lab-results').hidden=true;
-  const query='id:'+(commander.color_identity||[]).join('').toLowerCase()+' legal:commander '+(focus==='tribal'&&tribe?'t:'+tribe:'o:'+focus);
+  const query='id:'+(commander.color_identity||[]).join('').toLowerCase()+' legal:commander '+(focus==='tribal'&&tribe?'t:'+tribe:'o:'+({selfmill:'mill',counters:'counter',proliferate:'proliferate',graveyard:'graveyard',reanimation:'graveyard',copy:'copy',sacrifice:'sacrifice',ramp:'mana',draw:'draw',removal:'destroy'}[focus]||focus));
   const a=el('lab-scryfall-search');a.href='https://scryfall.com/search?q='+encodeURIComponent(query);a.hidden=false;
   message('Commander identified. Deck-wide scores need the generated Oracle index. You can still explore this focus on Scryfall.');
   return;
