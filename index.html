@@ -4,7 +4,8 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: blob: https://cards.scryfall.io; connect-src 'self' https://api.scryfall.com https://cards.scryfall.io; object-src 'none'; base-uri 'self'; frame-ancestors 'none';">
-<title>Scryfall · Luminary</title>
+<title>CBDRAGONS · MTG Card Repository</title>
+<meta name="description" content="CBDRAGONS MTG card repository: explore printings and decklists today; build toward verified Oracle text, rulings, Commander deckbuilding and collection tracking." />
 <link rel="icon" type="image/png" href="favicon.png" />
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,500;0,700;1,300;1,500&family=Jost:wght@200;400;500&display=swap" rel="stylesheet" />
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"
@@ -870,19 +871,36 @@
 <body>
 <div class="page">
   <header>
-    <div class="eyebrow">Scryfall · Image Downloader</div>
-    <h1>The <em>Luminary</em><br>Collection</h1>
-    <p class="tagline">Gather card art from the infinite archive</p>
+    <div class="eyebrow">CBDRAGONS · Commander Research</div>
+    <h1>MTG <em>Card</em><br>Repository</h1>
+    <p class="tagline">Accurate card data. Better Commander decks. A collection that stays organized.</p>
     <div class="header-rule">✦</div>
   </header>
 
+  <section class="float-card" id="project-overview" aria-label="MTG Repository Mission" style="margin-bottom:20px;">
+    <div class="card-label">Our Mission</div>
+    <p style="font-family:'Jost',sans-serif;font-size:14px;line-height:1.75;color:var(--pearl);margin-bottom:12px;">
+      Build a reliable MTG card reference for <strong>verifying rules text and printings</strong>,
+      tracking owned cards and confirmed deck changes, and improving Commander decks.
+      This page uses Luminary's card-image explorer as a starting point—not a proxy-maker as its primary goal.
+    </p>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:12px;font-family:'Jost',sans-serif;font-size:12px;line-height:1.7;color:var(--orchid);">
+      <div><strong style="color:var(--pearl);">Try today</strong><br>Look up card names and printings, import a decklist, compare card art, and click any image to check the card's official Scryfall rules.</div>
+      <div><strong style="color:var(--pearl);">We're building</strong><br>In-page Oracle text and rulings lookup, card collection inventory, tracked Commander decklists, swaps, and deck analysis.</div>
+    </div>
+    <p style="font-family:'Jost',sans-serif;font-size:11px;line-height:1.7;color:var(--lavender);margin-top:12px;">
+      A bulk-data pipeline for Scryfall Oracle cards and rulings is in the GitHub project, but its first successful refresh is required before the new indexes exist.
+      This web page does not search those indexes yet.
+      <a href="https://github.com/CBDRAGONS/scryfall-image-downloader" target="_blank" rel="noopener noreferrer" style="color:var(--pearl)">Project source and status</a>
+    </p>
+  </section>
   <div class="grid-2">
     <div class="float-card">
-      <div class="card-label">Card Names</div>
+      <div class="card-label">Explore Card Images &amp; Printings</div>
       <textarea id="card-input" placeholder="Lightning Bolt&#10;Black Lotus&#10;Jace, the Mind Sculptor&#10;&#10;One per line…"></textarea>
     </div>
     <div class="float-card">
-      <div class="card-label">Import Decklist</div>
+      <div class="card-label">Import .txt Decklist</div>
       
       <div style="min-height: 222px; position: relative;">
         <div class="upload-zone" id="upload-area">
@@ -915,7 +933,7 @@
   </div>
 
   <div class="float-card">
-    <div class="card-label">Image Resolution</div>
+    <div class="card-label">Image Options · Current Explorer</div>
     <div class="toggle-group" id="size-options">
       <button class="toggle" data-size="small" data-desc="146×204px · small thumbnails">Small</button>
       <button class="toggle" data-size="normal" data-desc="488×680px · standard quality">Normal</button>
@@ -953,7 +971,7 @@
     <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; margin-top: 28px;">
       <button class="btn-action active" id="btn-individual">⊞ &nbsp; Individual Cards</button>
       <button class="btn-action" id="btn-visual">⬚ &nbsp; Visual Decklist</button>
-      <button class="btn-action" id="btn-proxy">⎙ &nbsp; Print for Proxy</button>
+      <button class="btn-action" id="btn-proxy">⎙ &nbsp; Legacy Print Layout</button>
     </div>
   </div>
 
@@ -3199,17 +3217,26 @@ document.getElementById('proxy-generate-btn').addEventListener('click', async ()
 <div class="modal" id="info-modal">
   <div class="modal-content">
     <button class="modal-close" id="modal-close">×</button>
-    <h3>Luminary</h3>
-    <div class="version">VERSION 4.0</div>
-    
+    <h3>CBDRAGONS · MTG Card Repository</h3>
+    <div class="version">REPOSITORY PREVIEW · LUMINARY V4 FOUNDATION</div>
+
     <div class="modal-section">
-      <h4>Quick Instructions</h4>
+      <h4>Why We're Building This</h4>
+      <p style="font-size:12px;line-height:1.8;color:rgba(241,237,247,0.75);">
+        This project aims to bring verified Scryfall Oracle text, rulings, printings, collection inventory,
+        and Commander deck decisions into one reference. The current page still uses the inherited
+        image and printing explorer. In-page rules search and deck tracking are <strong>planned, not available yet</strong>.
+      </p>
+    </div>
+
+    <div class="modal-section">
+      <h4>Test the Current Explorer</h4>
       <ul>
-        <li>Enter card names (one per line) or upload a .txt decklist file</li>
-        <li>Select image quality and options (Paper Only, First Print)</li>
-        <li>Click "Summon Cards" to fetch from Scryfall</li>
-        <li>Choose an output: Individual Cards (ZIP), Visual Decklist (PNG), or Print for Proxy (PDF)</li>
-        <li>Successful fetches are saved to Recent Lists so you can reload them later</li>
+        <li>Paste <code>Sol Ring</code>, <code>Arcane Signet</code>, and <code>Lightning Bolt</code> on separate lines—or import a <code>.txt</code> decklist</li>
+        <li>Select Paper Only and/or First Print to explore printing differences</li>
+        <li>Click <strong>Summon Cards</strong> to fetch card images and metadata</li>
+        <li>Click any card image to open its Scryfall page and verify the actual rules text</li>
+        <li>Save or reload test lists in Recent Lists. Visual decklist, image export and legacy print layout remain optional utilities.</li>
       </ul>
     </div>
     
@@ -3229,7 +3256,7 @@ document.getElementById('proxy-generate-btn').addEventListener('click', async ()
     </div>
     
     <div class="modal-section">
-      <h4>What's New in v4.0</h4>
+      <h4>Inherited Luminary v4 Features</h4>
       <ul>
         <li>Recent Lists — your last 20 fetched lists, saved in this browser. Reload, rename, or download any of them as .txt</li>
         <li>First Print now resolves to the base printing, not a same-day showcase or retro-frame variant</li>
@@ -3270,8 +3297,10 @@ document.getElementById('proxy-generate-btn').addEventListener('click', async ()
     <div class="modal-section" style="margin-bottom:0;">
       <h4>Card Database</h4>
       <div style="margin-bottom: 14px; font-size: 12px; color: rgba(241,237,247,0.6); line-height: 1.7;">
-        First Print and Paper Only use a local card database to resolve printings without API calls.
-        Refresh when a new set releases (~every 3 months).
+        First Print and Paper Only use a local printings index to reduce API calls.
+        GitHub automation is configured to refresh data weekly when enabled.
+        The button below only reloads the already-published local index—it does not download Scryfall data.
+        The new Oracle/rulings indexes are separate and are not yet used by this page.
       </div>
       <!-- DB status row -->
       <div id="bulk-db-status" style="display:flex; align-items:center; gap:10px; padding: 10px 14px; border-radius: var(--radius-surface); background: rgba(42,18,63,0.35); border: 1px solid rgba(156,140,185,0.12); margin-bottom: 14px;">
@@ -3296,7 +3325,7 @@ document.getElementById('proxy-generate-btn').addEventListener('click', async ()
       "
       onmouseover="this.style.background='rgba(100,50,160,0.5)'; this.style.borderColor='rgba(198,182,221,0.5)'; this.style.color='var(--pearl)';"
       onmouseout="this.style.background='rgba(72,31,111,0.35)'; this.style.borderColor='rgba(156,140,185,0.3)'; this.style.color='var(--orchid)';"
-      title="Re-download the card database from Scryfall">
+      title="Reload the published local printing index; does not download Scryfall exports">
         ↻ &nbsp;Refresh Database
       </button>
     </div>
@@ -3305,9 +3334,11 @@ document.getElementById('proxy-generate-btn').addEventListener('click', async ()
 
 <footer>
   <div>
-    Created by <strong>ianos</strong>
+    CBDRAGONS project · Based on <strong>Luminary</strong> by ianos
     <span class="separator">•</span>
-    <a href="https://github.com/ianos93/scryfall-image-downloader/" target="_blank">View on GitHub</a>
+    <a href="https://github.com/CBDRAGONS/scryfall-image-downloader" target="_blank" rel="noopener noreferrer">Project source</a>
+    <span class="separator">•</span>
+    <a href="https://github.com/ianos93/scryfall-image-downloader/" target="_blank" rel="noopener noreferrer">Original Luminary</a>
     <span class="separator">•</span>
     Powered by <a href="https://scryfall.com" target="_blank">Scryfall API</a>
   </div>
