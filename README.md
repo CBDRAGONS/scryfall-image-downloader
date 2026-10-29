@@ -23,10 +23,13 @@ Open **[This is your Deck — Commander Deck Lab](deck-lab.html)** on GitHub Pag
 - The **full deck scoring and candidate rankings require the generated `data/oracle_index.json`**. Before the first successful refresh, the app can still verify a commander via the live Scryfall API, suggest mechanical directions, and link to a Scryfall search, but it must not invent scores for cards it couldn't verify.
 - Run `node --check deck-lab.js` and `node --test tests/deck-lab.test.cjs` for regression checks.
 ## 15-card top-down scanner (research and plan)
+## 15-card top-down scanner (working prototype; field testing pending)
 
-A **five-column × three-row, 15-card-per-photo** collection-capture workflow is under research. **It is not implemented or accuracy-tested yet.** The recommended first implementation uses fixed-mat cropping, title-band OCR, a local Scryfall name index, a conservative 15-slot review, and collection CSV export. Artwork image retrieval and pretrained visual embeddings are optional improvements to benchmark later.
+**[Open the phone photo scanner](https://cbdragons.github.io/scryfall-image-downloader/scanner/)** · [Phone user guide](docs/SCANNER_PHONE_GUIDE.md) · [Research & engineering plan](docs/15_CARD_SCANNER_RESEARCH.md)
 
-**Start with [15-Card Scanner Research and Engineering Decision](docs/15_CARD_SCANNER_RESEARCH.md)** — includes verified repository status, Karpathy-related vision and AutoResearch ideas, evaluated alternatives, technical pipeline, reliability safeguards, sample data contract, and a real-photo acceptance-test plan.
+The `scanner/` directory contains an initial **five-column × three-row, 15-card-per-photo browser implementation**: photograph upload, adjustable corner perspective correction, 15 crops, reused-worker English OCR, verified Scryfall-name catalog candidates, 15-slot manual review, a Vincent Valentine Commander workspace, duplicate-photo checks, and local-browser collection/deck records with CSV/text/JSON export.
+
+**Vincent Valentine deck workspace:** [source-verified commander and operating rules](decks/vincent-valentine/README.md) · [current checkpoint](decks/vincent-valentine/CHECKPOINT.md) · [new-chat starter prompt](decks/vincent-valentine/CHATGPT_PROMPT.md). The verified 99 has not been photographed or populated yet.\n\n**Status, truthfully:** scanner code and automated core tests exist; **real-phone accuracy and speed are not measured**, printings/foils are not identified automatically, and data is **not automatically synced** to ChatGPT/Google Drive. Export or import backups explicitly. The original Scryfall explorer still works independently. See the user guide for limitations, baseline tests and safe data handling.
 
 ## Current capabilities and roadmap
 
@@ -41,6 +44,8 @@ A **five-column × three-row, 15-card-per-photo** collection-capture workflow is
 | Commander Deck Lab synergy preview | **Pilot implemented** | Separate `deck-lab.html` page; full scores need published Oracle data. |
 | Search all Oracle text/rulings directly on the main explorer | **Planned** | The original `index.html` page does not expose a full rules search. |
 | Personal collection tracking and Commander deck editing | **Planned** | No synced inventory, ownership database or full deck editor yet. |
+| Search Oracle text/rulings directly on the site | **Planned** | The page **does not yet** display the new indexes; open card links on Scryfall. |
+| Local photographed-card inventory and Vincent deck assignment | **Prototype** | Scanner persists confirmed names in this browser and exports files; no remote sync or full deck legality audit. |
 | Synergy, curve, combo and legality checks | **Planned** | These need verified rules and a validated owned/decklist data source. |
 
 ## Test the current explorer with David

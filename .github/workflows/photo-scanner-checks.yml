@@ -1,0 +1,29 @@
+name: Photo scanner checks
+on:
+  push:
+    paths:
+      - 'scanner/**'
+      - '.github/workflows/photo-scanner-checks.yml'
+  pull_request:
+    paths:
+      - 'scanner/**'
+      - '.github/workflows/photo-scanner-checks.yml'
+  workflow_dispatch:
+jobs:
+  core-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Unit tests
+        run: node --test scanner/tests/*.test.mjs
+      - name: Syntax checks
+        run: |
+          node --check scanner/core.mjs
+          node --check scanner/scanner.js
+      - name: Verify assets
+        run: |
+          test -s scanner/index.html
+          test -s scanner/scanner.css

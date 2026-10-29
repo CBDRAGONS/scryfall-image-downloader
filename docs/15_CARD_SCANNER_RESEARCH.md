@@ -1,11 +1,19 @@
 # 15-Card Top-Down MTG Scanner: Research and Engineering Decision
 
-**Status:** Research / proposed design; scanner has **not** been implemented or benchmarked.  
+**Status:** OCR-first browser prototype implemented 2026-10-29; automated core tests passing. **Real 15-card photo accuracy and device performance are not benchmarked.** This document preserves the original research and future roadmap.  
 **Research date:** 2026-10-29  
 **Repository:** CBDRAGONS/scryfall-image-downloader  
 **Scope:** One high-resolution overhead photograph, **five columns × three rows = 15 card positions**, image-to-card identity, human review of uncertainty, and export to the existing MTG collection system. No automatic live camera loop or remote synchronization in v1.
 
 > **Decision:** Build a fixed-grid, OCR-first scanner with Scryfall-validated names and conservative uncertainty handling. Add artwork-feature matching only if real-photo testing demonstrates it reduces errors. Use Karpathy's **data-first baseline/evaluation discipline** now, and his **pretrained feature/nearest-neighbor** and **AutoResearch-style controlled experiment** ideas when warranted. **Do not train a custom model from scratch for v1.**
+
+## Implementation checkpoint · 2026-10-29
+
+**Implemented after this research was written:** [scanner/](../scanner/) is a separate browser page for 15-position photograph cropping, manual four-corner alignment, Tesseract.js title OCR, Scryfall card-name catalog matching, review, duplicate-photo protection, browser-local saved batches, optional Vincent Valentine deck assignment, and CSV/text/JSON exports. [User guide](SCANNER_PHONE_GUIDE.md).
+
+**Not implemented:** precomputed image embeddings or artwork reranking, automatic exact printing/foil recognition, remote Google Drive or ChatGPT database synchronization, comprehensive Commander legality auditing, and benchmarked phone recognition accuracy. These remain conditional research work. The implementation uses the Scryfall card-names catalog, not the missing published Oracle index. Six Node regression checks and syntax checks were added via GitHub Actions.
+
+The repository-state discussion below is a historical **pre-implementation snapshot**.
 
 ## 1. What exists in this repo (verified on 2026-10-29)
 
