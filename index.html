@@ -886,11 +886,14 @@
     </p>
     <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:12px;font-family:'Jost',sans-serif;font-size:12px;line-height:1.7;color:var(--orchid);">
       <div><strong style="color:var(--pearl);">Try today</strong><br>Look up card names and printings, import a decklist, compare card art, and click any image to check the card's official Scryfall rules.</div>
-      <div><strong style="color:var(--pearl);">We're building</strong><br>In-page Oracle text and rulings lookup, card collection inventory, tracked Commander decklists, swaps, and deck analysis.</div>
+      <div><strong style="color:var(--pearl);">Deck Lab pilot available</strong><br>Choose a commander, select a synergy direction, and compare card-text fit once the Oracle index is refreshed. Collection inventory and saved swaps are still planned.</div>
     </div>
+    <p style="margin:14px 0 12px;">
+      <a href="./deck-lab.html" style="display:inline-block;padding:11px 16px;border:1px solid var(--lavender);background:rgba(120,75,160,.4);border-radius:var(--radius-control);color:var(--pearl);font-family:'Jost',sans-serif;font-size:13px;text-decoration:none;font-weight:500;">✦ This is your Deck · Open Commander Deck Lab</a>
+    </p>
     <p style="font-family:'Jost',sans-serif;font-size:11px;line-height:1.7;color:var(--lavender);margin-top:12px;">
-      A bulk-data pipeline for Scryfall Oracle cards and rulings is in the GitHub project, but its first successful refresh is required before the new indexes exist.
-      This web page does not search those indexes yet.
+      Full Deck Lab card recommendations require the first successful Scryfall bulk-data refresh;
+      until then, the pilot can identify the commander and its mechanical themes using live card text.
       <a href="https://github.com/CBDRAGONS/scryfall-image-downloader" target="_blank" rel="noopener noreferrer" style="color:var(--pearl)">Project source and status</a>
     </p>
   </section>
@@ -2502,7 +2505,10 @@ document.getElementById('fetch-btn').addEventListener('click',async()=>{
       if (result.error) {
         const entry = allEntries[result.index];
         const displayName = entry.name || (entry.set && entry.number ? `${entry.set.toUpperCase()} #${entry.number}` : 'Unknown');
-        log(`✕  ${displayName}: metadata lookup failed (${result.error}); no verified offline match`, 'e');
+        const creatureTypeHint = displayName.toLowerCase() === 'merfolk'
+          ? ' Merfolk is a creature type; search it as a synergy in Commander Deck Lab instead of a card name.'
+          : '';
+        log(`✕  ${displayName}: metadata lookup failed (${result.error}); no verified offline match.${creatureTypeHint}`, 'e');
         err++;
       } else { cardMetadataMap.set(result.index, result.card); }
       
