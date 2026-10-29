@@ -10,7 +10,7 @@ test("Scryfall candidate lookup resolves exact and near OCR matches",()=>{
  assert.deepEqual(candidates(ix,"Sol Ring").map(x=>x.name),["Sol Ring"]);
  assert.equal(candidates(ix,"Lightnig Bolt")[0].name,"Lightning Bolt");
  assert.equal(candidates(ix,"Fire")[0].name,"Fire // Ice");
- assert.equal(candidates(ix,""),[]);
+ assert.deepEqual(candidates(ix,""),[]);
 });
 test("rectangular and tilted photo geometry preserves every cell",()=>{
  const rect=[{x:0,y:0},{x:1,y:0},{x:1,y:1},{x:0,y:1}];
