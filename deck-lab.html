@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Commander-first MTG Deck Lab with explainable Scryfall-backed synergy scoring">
+<title>Commander Deck Lab · CBDRAGONS</title>
+<link rel="icon" href="./favicon.png">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600&family=Jost:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#120b1d;--panel:#21152e;--edge:#54416b;--ink:#f2eefa;--muted:#c0b2d0;--accent:#d5a9ff;--green:#a9e3bd}
+*{box-sizing:border-box}body{background:radial-gradient(circle at 10% 0,#3c224e 0%,#160d21 45%,#0d0813 100%);color:var(--ink);margin:0;font:15px Jost,sans-serif}a{color:#e4bfff}button,input,textarea{font:inherit}button{cursor:pointer}button:disabled{opacity:.6;cursor:wait}
+main{max-width:1120px;margin:0 auto;padding:24px 20px 70px}header{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:30px}header a{text-decoration:none;font-size:13px}
+h1,h2{font-family:'Cormorant Garamond',serif;font-weight:600}h1{font-size:clamp(38px,7vw,68px);margin:10px 0}h2{font-size:30px;margin:0 0 14px}
+.eyebrow{letter-spacing:.22em;text-transform:uppercase;font-size:11px;color:var(--accent)}.lead{max-width:780px;color:var(--muted);line-height:1.8}
+.panel{border:1px solid var(--edge);border-radius:12px;padding:22px;background:rgba(32,19,47,.85);margin-top:20px;box-shadow:0 12px 44px rgba(0,0,0,.12)}
+.two{display:grid;grid-template-columns:1fr 1.2fr;gap:20px}label{display:block;font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--accent);margin-bottom:8px}
+input[type=text],textarea{width:100%;background:#120d1c;border:1px solid var(--edge);border-radius:8px;color:white;padding:12px;outline-offset:3px}
+textarea{height:265px;resize:vertical;font-size:13px;line-height:1.55}input[type=file]{max-width:100%;margin:12px 0;color:var(--muted)}
+.actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}.primary,.secondary,.lab-chip{border:1px solid #9d6aca;background:#6e3f8b;color:white;padding:11px 16px;border-radius:8px}
+.secondary{border-color:var(--edge);background:#332242}.primary:hover,.secondary:hover{filter:brightness(1.2)}
+.lab-muted,.small{font-size:12px;color:var(--muted);line-height:1.6}.lab-chip{background:transparent;color:var(--ink);border:1px solid #634780;padding:9px 12px;font-size:12px}.lab-chip.active{background:#7e50a1;border-color:#e9cbff}
+.chips{display:flex;flex-wrap:wrap;gap:8px}.lab-result{border:1px solid #49365c;padding:14px;border-radius:9px;background:#1a1125;margin:10px 0}.lab-result-top{display:flex;justify-content:space-between;align-items:start;gap:15px}
+.lab-result p{margin:5px 0}.lab-score{color:var(--green);font-size:20px;white-space:nowrap}.lab-score-detail{color:#b9a1cb;font-size:11px;line-height:1.6;margin-top:6px}.lab-card-link{font-size:15px;font-weight:500}
+.gridresults{display:grid;grid-template-columns:1fr 1fr;gap:20px}.hint{border-left:3px solid #af81d1;padding:10px 14px;background:rgba(165,117,203,.12);font-size:13px;line-height:1.7}
+.counter{color:var(--green);font-weight:500}.footer{margin-top:32px;color:var(--muted);font-size:12px;line-height:1.8}#lab-status{min-height:24px;color:#e4caef}
+#lab-workbench[hidden],#lab-results[hidden],#lab-scryfall-search[hidden]{display:none}
+@media(max-width:750px){.two,.gridresults{grid-template-columns:1fr}.panel{padding:17px}main{padding:16px 14px 60px}header{margin-bottom:20px}}
+</style></head><body><main>
+<header><span class="eyebrow">CBDRAGONS · Deckbuilding</span><a href="./index.html">← Back to Card Repository</a></header>
+<div class="eyebrow">Commander-first research</div>
+<h1>This is your <em>Deck.</em></h1>
+<p class="lead">What kinda synergy are you lookin' for, Brother? Your commander comes first. We'll read its Oracle text, identify mechanical directions, then compare legal cards against your chosen focus and the deck you already have.</p>
+<section class="panel" aria-label="Load a deck">
+<h2>01 · Tell us what you're playing</h2>
+<div class="two"><div>
+<label for="lab-commander">Your commander</label><input id="lab-commander" type="text" autocomplete="off" placeholder="The Mimeoplasm" value="The Mimeoplasm">
+<p class="small">Enter an exact commander card name. Creature types like “Merfolk” are synergy themes, not card names.</p>
+<div class="actions"><button id="lab-sample" class="secondary" type="button">Load The Mimeoplasm deck</button></div>
+<p id="lab-total" class="counter" aria-live="polite"></p><p id="lab-import-issues" class="small"></p>
+</div><div><label for="lab-deck">Moxfield / text decklist</label>
+<textarea id="lab-deck" spellcheck="false" placeholder="1 Sol Ring&#10;1 Arcane Signet&#10;...&#10;1 The Mimeoplasm"></textarea>
+<label for="lab-file">Or upload a .txt decklist</label><input id="lab-file" type="file" accept=".txt,text/plain">
+</div></div>
+<div class="actions"><button class="primary" id="lab-analyze" type="button">Analyze my Commander &amp; Deck</button></div>
+<p id="lab-status" role="status" aria-live="polite">Paste a deck or load the saved example to start.</p>
+</section>
+<section class="panel" id="lab-workbench" hidden>
+<h2>02 · What is your Commander asking for?</h2><div id="lab-commander-info" class="hint"></div>
+<p id="lab-commander-reason" class="lab-muted"></p>
+<h2 style="font-size:25px;margin-top:22px">What kinda synergy are you lookin' for, Brother?</h2>
+<div class="chips" id="lab-themes" aria-label="Commander-informed synergy choices"></div>
+<form id="lab-custom" class="actions" style="align-items:end;margin:17px 0">
+<div style="flex:1;min-width:200px"><label for="lab-trait-input">Or choose a creature type / trait</label><input type="text" id="lab-trait-input" placeholder="Merfolk, Elf, Ooze, card draw…"></div>
+<button class="secondary" type="submit">Check this synergy</button></form>
+<div class="hint"><strong>Current focus: <span id="lab-focus-label"></span>.</strong> Score = 55% commander fit + 35% requested synergy + 10% deck need. It's a reproducible card-text heuristic, <strong>not</strong> a win probability, proven combo, or official bracket rating.</div>
+<a id="lab-scryfall-search" class="secondary" href="https://scryfall.com" target="_blank" rel="noopener noreferrer" hidden style="display:inline-block;margin-top:14px;text-decoration:none">Explore this focus on Scryfall</a>
+<div id="lab-results" hidden>
+<p id="lab-coverage" class="lab-muted"></p><p id="lab-missing" class="small"></p>
+<div class="gridresults">
+<div><h2>03 · Cards to consider adding</h2><div id="lab-additions"></div></div>
+<div><h2>04 · Cards to review</h2><p class="small">Lower score for this focus does not mean a card is bad. No changes are applied automatically.</p><div id="lab-review"></div></div>
+</div></div></section>
+<p class="footer">Card text and legality: <a href="https://scryfall.com/docs/api">Scryfall</a>. Deck imports are not saved to a server. Full deck scoring needs the published Oracle index from the GitHub refresh workflow. This pilot does not commit any deck changes.</p>
+</main><script src="./deck-lab.js" defer></script></body></html>
