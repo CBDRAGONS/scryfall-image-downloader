@@ -55,7 +55,7 @@ test('color identity and Commander legality filter suggestions',()=>{
  fixtures.forEach((c,i)=>{by_name[c.name.toLowerCase()]=String(i);cards[i]=c});
  const db={by_name,cards};
  const added=lib.recommend(db,commander,deck,'selfmill',null).add;
- assert.deepEqual(added.map(x=>x.card.name),["Stitcher's Supplier"]);
+ assert.deepEqual(Array.from(added,x=>x.card.name),["Stitcher's Supplier"]);
  const tribal=lib.recommend(db,commander,deck,'tribal','Merfolk').add;
  assert.equal(tribal.length,2);
  assert.equal(tribal.every(x=>x.score.focusFit===100),true);
