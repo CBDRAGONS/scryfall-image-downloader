@@ -22,6 +22,11 @@ Open **[This is your Deck — Commander Deck Lab](deck-lab.html)** on GitHub Pag
 - Enter a creature type such as **Merfolk** under the synergy menu; that is not an exact card-name request.
 - The **full deck scoring and candidate rankings require the generated `data/oracle_index.json`**. Before the first successful refresh, the app can still verify a commander via the live Scryfall API, suggest mechanical directions, and link to a Scryfall search, but it must not invent scores for cards it couldn't verify.
 - Run `node --check deck-lab.js` and `node --test tests/deck-lab.test.cjs` for regression checks.
+## 15-card top-down scanner (research and plan)
+
+A **five-column × three-row, 15-card-per-photo** collection-capture workflow is under research. **It is not implemented or accuracy-tested yet.** The recommended first implementation uses fixed-mat cropping, title-band OCR, a local Scryfall name index, a conservative 15-slot review, and collection CSV export. Artwork image retrieval and pretrained visual embeddings are optional improvements to benchmark later.
+
+**Start with [15-Card Scanner Research and Engineering Decision](docs/15_CARD_SCANNER_RESEARCH.md)** — includes verified repository status, Karpathy-related vision and AutoResearch ideas, evaluated alternatives, technical pipeline, reliability safeguards, sample data contract, and a real-photo acceptance-test plan.
 
 ## Current capabilities and roadmap
 
