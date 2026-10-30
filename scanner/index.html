@@ -7,6 +7,7 @@
 <meta name="description" content="Photograph and review fifteen Magic cards at a time; export your Vincent Valentine inventory.">
 <link rel="stylesheet" href="./scanner.css">
 <script defer src="https://cdn.jsdelivr.net/npm/tesseract.js@5.1.1/dist/tesseract.min.js"></script>
+<script defer src="https://accounts.google.com/gsi/client"></script>
 <script type="module" src="./scanner.js"></script>
 </head>
 <body>
@@ -60,6 +61,34 @@
       <div><h3>Saved collection <small>(card names)</small></h3><div id="inventoryList" class="inventory-list"></div></div>
       <div><h3>Recent batches</h3><div id="batchHistory" class="inventory-list"></div></div>
     </div>
+  </section>
+  <section class="panel" aria-labelledby="google-heading">
+    <div class="heading"><h2 id="google-heading">4 · Push to Google Sheets</h2><span class="muted">Optional · secure browser authorization</span></div>
+    <p class="hint">Send confirmed names from your saved photo batches into the <strong>Scanner_Intake</strong> tab of your MTG Commander Master Database. Repeated pushes check batch/position IDs and skip previously imported rows. <strong>This does not update Collection or Deck_Cards automatically.</strong></p>
+    <details class="setup"><summary>First-time setup: Google OAuth client (required)</summary>
+      <ol>
+        <li>Open <a target="_blank" rel="noopener noreferrer" href="https://console.cloud.google.com/apis/credentials">Google Cloud credentials</a>, choose or create a Google Cloud project, and <a target="_blank" rel="noopener noreferrer" href="https://console.cloud.google.com/apis/library/sheets.googleapis.com">enable the Google Sheets API</a>.</li>
+        <li>Configure the Google Auth Platform consent screen. For a personal project, use External testing and add your Google account as a <strong>test user</strong> if required.</li>
+        <li>Create an <strong>OAuth client ID → Web application</strong>, and add <code>https://cbdragons.github.io</code> to <strong>Authorized JavaScript origins</strong>. You do not need a redirect URI for this browser popup token flow.</li>
+        <li>Paste your OAuth <strong>client ID</strong> below (not a client secret), and paste the URL of your existing <strong>MTG Commander — Master Database</strong> Google Sheet.</li>
+        <li>Tap <strong>Save settings</strong>, <strong>Connect to Google</strong>, and <strong>Test destination</strong>. Sign in to the Google account that can edit your Master Database.</li>
+        <li>Once you have saved at least one reviewed photo batch locally, tap <strong>Push saved batches</strong>. Check readback results before treating the import as complete.</li>
+      </ol>
+      <p class="hint">Never paste a client secret, API key, Google password, personal access token, or downloaded service-account JSON here. A public OAuth client ID is expected. Authorization happens directly with Google; access tokens stay in memory and are not committed to GitHub or written to browser storage.</p>
+    </details>
+    <div class="settings-grid">
+      <label>Web OAuth client ID<input id="googleClientId" type="text" autocapitalize="none" autocomplete="off" spellcheck="false" placeholder="123456789-abcdef.apps.googleusercontent.com"></label>
+      <label>Master Google Sheet URL<input id="googleSheetId" type="url" autocapitalize="none" autocomplete="off" spellcheck="false" placeholder="https://docs.google.com/spreadsheets/d/.../edit"></label>
+    </div>
+    <div class="controls">
+      <button id="googleSaveSettings" type="button" class="secondary">Save settings</button>
+      <button id="googleConnect" type="button" class="secondary">Connect to Google</button>
+      <button id="googleTest" type="button" class="secondary" disabled>Test destination</button>
+      <button id="googlePush" type="button" disabled>Push saved batches</button>
+    </div>
+    <p id="googleStatus" class="hint" role="status" aria-live="polite">Not connected. Setup is required before the first push.</p>
+    <p><a id="googleTargetLink" target="_blank" rel="noopener noreferrer">No target configured</a></p>
+    <p class="hint">Google Sheets permission is requested for this browser session. The scanner uses it only to read and append to your specified workbook. Revoke permission in your Google account whenever you want. Cross-device backups are still separate.</p>
   </section>
   <footer>CBDRAGONS scanner proof-of-concept. Uses <a href="https://scryfall.com/">Scryfall</a> card-name data. No paid API keys. Image recognition is not guaranteed; verify critical card identities and printings before using your master inventory.</footer>
 </main>
