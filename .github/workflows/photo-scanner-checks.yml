@@ -23,6 +23,8 @@ jobs:
         run: |
           node --check scanner/core.mjs
           node --check scanner/scanner.js
+          node --check scanner/google-sync.mjs
+          node --check scanner/google-sync-core.mjs
       - name: Verify assets
         run: |
           test -s scanner/index.html
