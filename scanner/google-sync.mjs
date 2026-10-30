@@ -18,6 +18,14 @@ function readSettings(){
    const s=JSON.parse(localStorage.getItem(storeKey)||"{}");
    config={clientId:s.clientId||"",sheetId:s.sheetId||""};
  }catch{}
+ // An optional link parameter pre-fills only an unconfigured destination.
+ // The user still sees the target, signs into Google and confirms before any write.
+ if(!config.sheetId){
+   const queryId=new URLSearchParams(window.location.search).get("sheet");
+   if(queryId){
+     try{config.sheetId=sheetIdFromInput(queryId)}catch{}
+   }
+ }
  $("googleClientId").value=config.clientId;
  $("googleSheetId").value=config.sheetId;
 }
