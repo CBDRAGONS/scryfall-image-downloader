@@ -1,4 +1,5 @@
 import {COLS,ROWS,SLOT_COUNT,buildNameIndex,candidates,normalizeName,project,cellUV,aggregateEntries,toCSV,validateBatch} from "./core.mjs";
+import {initializeGoogleSync} from "./google-sync.mjs";
 const el=id=>document.getElementById(id);
 const STORAGE="cbdragons-scanner-v1";
 const CATALOG="cbdragons-scryfall-cardnames-v1";
@@ -282,6 +283,7 @@ el("importBackup").addEventListener("change",async e=>{
   finally{e.target.value=""}
 });
 storageRead();showInventory();renderCards();
+initializeGoogleSync(()=>state.batches.map(b=>({...b,cards:b.cards.map(c=>({...c}))})));
 notice("workStatus","Scryfall names will load when you scan. Photos remain on your device.");
 // Preload names quietly; the app remains usable for cropping when offline.
 loadCatalog().then(()=>notice("workStatus","Scryfall name index ready. Choose a photograph.")).catch(()=>notice("workStatus","Scryfall names unavailable. Cropping still works; saving requires the catalog."));
