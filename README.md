@@ -18,7 +18,7 @@ This project **started as a fork of [Luminary by ianos](https://github.com/ianos
 
 The `scanner/` directory contains an initial **five-column × three-row, 15-card-per-photo browser implementation**: photograph upload, adjustable corner perspective correction, 15 crops, reused-worker English OCR, verified Scryfall-name catalog candidates, 15-slot manual review, a Vincent Valentine Commander workspace, duplicate-photo checks, and local-browser collection/deck records with CSV/text/JSON export.
 
-**Vincent Valentine deck workspace:** [source-verified commander and operating rules](decks/vincent-valentine/README.md) · [current checkpoint](decks/vincent-valentine/CHECKPOINT.md) · [new-chat starter prompt](decks/vincent-valentine/CHATGPT_PROMPT.md). The verified 99 has not been photographed or populated yet.\n\n**Status, truthfully:** scanner code and automated core tests exist; **real-phone accuracy and speed are not measured**, printings/foils are not identified automatically, and data is **not automatically synced** to ChatGPT/Google Drive. Export or import backups explicitly. The original Scryfall explorer still works independently. See the user guide for limitations, baseline tests and safe data handling.
+**Vincent Valentine deck workspace:** [source-verified commander and operating rules](decks/vincent-valentine/README.md) · [current checkpoint](decks/vincent-valentine/CHECKPOINT.md) · [new-chat starter prompt](decks/vincent-valentine/CHATGPT_PROMPT.md). The verified 99 has not been photographed or populated yet.\n\n**Status, truthfully:** scanner code and automated core tests exist; **real-phone recognition accuracy and Google OAuth push are not yet field-tested**, printings/foils are not automatically identified, and Google push requires the user's own **Web OAuth client ID** and one-time setup. The scanner can now **push confirmed saved batches into Scanner_Intake** in the actual Master Database, but it does **not** automatically promote rows to authoritative Collection/Deck_Cards or sync data into ChatGPT. Export JSON backups. The original Scryfall explorer remains independent. [Read the Google connection setup](docs/SCANNER_PHONE_GUIDE.md#direct-google-sheets-push-oauth-setup-required).
 
 ## Current capabilities and roadmap
 
@@ -31,7 +31,8 @@ The `scanner/` directory contains an initial **five-column × three-row, 15-card
 | Oracle text and rulings bulk-data index generators | **Implemented code** | `update_bulk_data.py` builds indexes after a successful Scryfall download. |
 | Weekly/manual GitHub Actions refresh | **Configured** | Verify actual run and generated files before claiming data is populated. |
 | Search Oracle text/rulings directly on the site | **Planned** | The page **does not yet** display the new indexes; open card links on Scryfall. |
-| Local photographed-card inventory and Vincent deck assignment | **Prototype** | Scanner persists confirmed names in this browser and exports files; no remote sync or full deck legality audit. |
+| Local photographed-card inventory and Vincent deck assignment | **Prototype** | Scanner persists confirmed names in this browser and exports files; no full deck legality audit. |
+| Google Sheets Scanner_Intake push | **Code implemented; OAuth setup and field test required** | User-authorized browser writes to Scanner_Intake with duplicate-slot checks and readback; no automatic Collection promotion. |
 | Synergy, curve, combo and legality checks | **Planned** | These need verified rules and a validated owned/decklist data source. |
 
 ## Test the current explorer with David
