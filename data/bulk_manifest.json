@@ -1,8 +1,31 @@
 {
-  "local_updated_at": "2026-08-08T22:59:31Z",
-  "scryfall_updated_at": "2026-08-08T21:12:18.583+00:00",
-  "oracle_count": 38623,
-  "total_entries": 116613,
-  "file_size_mb": 9.1,
-  "format_version": 3
+  "local_updated_at": "2026-11-02T19:38:07Z",
+  "scryfall_updated_at": "2026-11-02T10:06:56.614+00:00",
+  "oracle_count": 39287,
+  "total_entries": 119936,
+  "file_size_mb": 9.3,
+  "format_version": 3,
+  "indexes": {
+    "default_cards": {
+      "filename": "prints_index.json",
+      "source_updated_at": "2026-11-02T10:06:56.614+00:00",
+      "source_records": 120019,
+      "size_bytes": 9787690,
+      "indexed_keys": 39287
+    },
+    "oracle_cards": {
+      "filename": "oracle_index.json",
+      "source_updated_at": "2026-11-02T10:02:00.811+00:00",
+      "source_records": 39287,
+      "size_bytes": 42505320,
+      "indexed_keys": 39287
+    },
+    "rulings": {
+      "filename": "rulings_index.json",
+      "source_updated_at": "2026-11-02T10:00:34.258+00:00",
+      "source_records": 79706,
+      "size_bytes": 19017463,
+      "indexed_keys": 20080
+    }
+  }
 }
