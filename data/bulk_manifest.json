@@ -1,28 +1,28 @@
 {
-  "local_updated_at": "2026-11-09T19:55:58Z",
-  "scryfall_updated_at": "2026-11-09T10:06:40.990+00:00",
-  "oracle_count": 39288,
-  "total_entries": 119954,
+  "local_updated_at": "2026-11-16T19:43:42Z",
+  "scryfall_updated_at": "2026-11-16T10:06:16.534+00:00",
+  "oracle_count": 39297,
+  "total_entries": 120046,
   "file_size_mb": 9.3,
   "format_version": 3,
   "indexes": {
     "default_cards": {
       "filename": "prints_index.json",
-      "source_updated_at": "2026-11-09T10:06:40.990+00:00",
-      "source_records": 120046,
-      "size_bytes": 9788956,
-      "indexed_keys": 39288
+      "source_updated_at": "2026-11-16T10:06:16.534+00:00",
+      "source_records": 120138,
+      "size_bytes": 9795579,
+      "indexed_keys": 39297
     },
     "oracle_cards": {
       "filename": "oracle_index.json",
-      "source_updated_at": "2026-11-09T10:02:02.832+00:00",
-      "source_records": 39288,
-      "size_bytes": 42485614,
-      "indexed_keys": 39288
+      "source_updated_at": "2026-11-16T10:02:01.799+00:00",
+      "source_records": 39297,
+      "size_bytes": 42501610,
+      "indexed_keys": 39297
     },
     "rulings": {
       "filename": "rulings_index.json",
-      "source_updated_at": "2026-11-09T10:00:37.401+00:00",
+      "source_updated_at": "2026-11-16T10:00:32.812+00:00",
       "source_records": 79706,
       "size_bytes": 19017463,
       "indexed_keys": 20080
